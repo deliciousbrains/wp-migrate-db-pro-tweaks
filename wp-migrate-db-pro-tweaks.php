@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: WP Migrate DB Pro Tweaks
-Plugin URI: http://deliciousbrains.com/wp-migrate-db-pro/
-Description: Tweaks using WP Migrate DB Pro's filters
+Plugin URI: http://github.com/deliciousbrains/wp-migrate-db-pro-tweaks
+Description: Examples of using WP Migrate DB Pro's filters
 Author: Delicious Brains
 Version: 0.1
 Author URI: http://deliciousbrains.com
@@ -19,36 +19,55 @@ Author URI: http://deliciousbrains.com
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // **********************************************************************
 
-if ( version_compare( PHP_VERSION, '5.2', '<' ) ) {
-    // Thanks for this Yoast!
-	if ( is_admin() && ( !defined( 'DOING_AJAX' ) || !DOING_AJAX ) ) {
-		require_once ABSPATH.'/wp-admin/includes/plugin.php';
-		deactivate_plugins( __FILE__ );
-	    wp_die( __('WP Migrate DB Pro requires PHP 5.2 or higher, as does WordPress 3.2 and higher. The plugin has now disabled itself.', 'wp-migrate-db' ) );
-	}
-}
+class WP_Migrate_DB_Pro_Tweaks {
 
-function wpmdbpro_tweaks_admin_init() {
-    add_filter( 'wpmdb_migration_complete', 'wpmdbpro_tweaks_migration_complete', 10, 2 );
-}
-
-add_action( 'admin_init', 'wpmdbpro_tweaks_admin_init' );
-
-// Counts migrations by connection URL and migration type
-function wpmdbpro_tweaks_migration_complete( $migration_type, $connection_url ) {
-    $slug = 'wpmdbpro_stats';
-    
-    $stats = get_option( $slug );
-    if ( !$stats ) {
-        $stats = array();
+    function __construct() {
+        if ( !is_admin() ) return;
+        add_action( 'init', array( $this, 'init' ), 9 );
     }
 
-    if ( isset( $stats[$connection_url][$migration_type] ) ) {
-        $stats[$connection_url][$migration_type] = $stats[$connection_url][$migration_type] + 1;
+    function init() {
+        // Uncomment the following lines to initiate a filter
+
+        //add_filter( 'wpmdb_migration_complete', array( $this, 'migration_complete', 10, 2 );
+        //add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ), 10, 2 );
+        //add_filter( 'wpmdb_sensible_pull_limit', array( $this, 'sensible_pull_limit' ), 10, 2 );
+        //add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
     }
-    else {
-        $stats[$connection_url][$migration_type] = 1;
+
+    // Override the temporary table name prefix
+    function temporary_prefix( $prefix ) {
+        return 'mig_';
     }
-    
-    update_option( $slug, $stats );
+
+    // Force bottleneck
+    function bottleneck( $bytes ) {
+        return 1024 * 1024; // 1MB
+    }
+
+    // Force pull limit
+    function sensible_pull_limit( $bytes ) {
+        return 1024 * 1024; // 1MB
+    }
+
+    // Counts migrations by connection URL and migration type
+    function migration_complete( $migration_type, $connection_url ) {
+        $slug = 'wpmdbpro_stats';
+        
+        $stats = get_option( $slug );
+        if ( !$stats ) {
+            $stats = array();
+        }
+
+        if ( isset( $stats[$connection_url][$migration_type] ) ) {
+            $stats[$connection_url][$migration_type] = $stats[$connection_url][$migration_type] + 1;
+        }
+        else {
+            $stats[$connection_url][$migration_type] = 1;
+        }
+        
+        update_option( $slug, $stats );
+    }
 }
+
+new WP_Migrate_DB_Pro_Tweaks();
