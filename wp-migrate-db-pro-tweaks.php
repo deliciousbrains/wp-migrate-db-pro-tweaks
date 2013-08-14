@@ -33,6 +33,15 @@ class WP_Migrate_DB_Pro_Tweaks {
         //add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ), 10, 2 );
         //add_filter( 'wpmdb_sensible_pull_limit', array( $this, 'sensible_pull_limit' ), 10, 2 );
         //add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
+        //add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
+    }
+
+    // By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
+    // when the database is overwritten in a migration. This filter allows 
+    // you to define additional options to preserve
+    function preserved_options( $options ) {
+        $options[] = 'blogname';
+        return $options;
     }
 
     // Override the temporary table name prefix
