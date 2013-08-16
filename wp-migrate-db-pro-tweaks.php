@@ -33,6 +33,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ), 10, 2 );
 		//add_filter( 'wpmdb_sensible_pull_limit', array( $this, 'sensible_pull_limit' ), 10, 2 );
 		//add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
+		//add_filter( 'wpmdb_upload_info', array( $this, 'upload_info' ) );
 	}
 
 	// Override the temporary table name prefix
@@ -68,6 +69,20 @@ class WP_Migrate_DB_Pro_Tweaks {
 		
 		update_option( $slug, $stats );
 	}
+
+	/**
+	 * Custom file upload directory and URL
+	 * If using the "Export" or "Backup" features in WP Migrate DB Pro we will need to write files to your filesystem.
+	 * This filter allows you to define a custom folder to write to.
+	*/
+	function upload_info() {
+		// The returned data needs to be in a very specific format, see below for example
+		return array(
+			'path' 	=> '/path/to/custom/uploads/directory', // <- note missing end trailing slash
+			'url'	=> 'http://yourwebsite.com/custom/uploads/directory' // <- note missing end trailing slash
+		);
+	}
+
 }
 
 new WP_Migrate_DB_Pro_Tweaks();
