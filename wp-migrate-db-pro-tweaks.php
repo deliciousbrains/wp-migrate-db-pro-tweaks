@@ -35,6 +35,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
 		//add_filter( 'wpmdb_upload_info', array( $this, 'upload_info' ) );
 		//add_filter( 'wpmdb_upload_dir_name', array( $this, 'upload_dir_name' ) );
+		//add_filter( 'wpmdb_default_remote_post_timeout', array( $this, 'default_remote_post_timeout' ) );
 	}
 
 	// Override the temporary table name prefix
@@ -93,6 +94,17 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function upload_dir_name() {
 		return 'database-dumps';
+	}
+
+	/**
+	 * Used within our remote_post() function
+	 * Defines a timeout that is used when making HTTP POST requests to the remote server.
+	 * Is used when requesting SQL from the server or when transferring SQL to a remote server.
+	 * Value in seconds.
+	 * Default is 60 * 20 (20 minutes)
+	*/
+	function default_remote_post_timeout( $timeout ) {
+		return 60 * 30;
 	}
 
 }
