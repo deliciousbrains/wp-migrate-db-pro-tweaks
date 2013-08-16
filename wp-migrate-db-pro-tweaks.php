@@ -34,6 +34,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_sensible_pull_limit', array( $this, 'sensible_pull_limit' ), 10, 2 );
 		//add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
 		//add_filter( 'wpmdb_upload_info', array( $this, 'upload_info' ) );
+		//add_filter( 'wpmdb_upload_dir_name', array( $this, 'upload_dir_name' ) );
 	}
 
 	// Override the temporary table name prefix
@@ -81,6 +82,17 @@ class WP_Migrate_DB_Pro_Tweaks {
 			'path' 	=> '/path/to/custom/uploads/directory', // <- note missing end trailing slash
 			'url'	=> 'http://yourwebsite.com/custom/uploads/directory' // <- note missing end trailing slash
 		);
+	}
+
+	/**
+	 * Custom upload directory name
+	 * If you decide not to use the above filter you can instead define a custom directory name here.
+	 * The default name is 'wp-migrate-db' and the default path is 'wp-content/uploads/wp-migrate-db'.
+	 * Please use standard folder naming conventions, no spaces, no underscores, no caps, no special characters, etc
+	 * Note: you cannot use this filter if you're already using the filter above, it will be ignored.
+	*/
+	function upload_dir_name() {
+		return 'database-dumps';
 	}
 
 }
