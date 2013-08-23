@@ -62,23 +62,26 @@ class WP_Migrate_DB_Pro_Tweaks {
 		return 1024 * 1024; // 1MB
 	}
 
-	// Counts migrations by connection URL and migration type
+	/**
+	 * This action fires after a migration has been successfully completed.
+	 * It will fire on both the local and remote machines.
+	 * In this example, we send an email to the DBA once a migration has completed.
+	*/
 	function migration_complete( $migration_type, $connection_url ) {
-		$slug = 'wpmdbpro_stats';
-		
-		$stats = get_option( $slug );
-		if ( !$stats ) {
-			$stats = array();
-		}
-
-		if ( isset( $stats[$connection_url][$migration_type] ) ) {
-			$stats[$connection_url][$migration_type] = $stats[$connection_url][$migration_type] + 1;
+		if( $migration_type == 'push' ) {
+			wp_mail( 
+				'dba@yourwebsite.com', 
+				'Push migration complete!', 
+				sprintf( 'Hi there, we just pushed the DB from %s to %s, this occured at %s.', home_url(), $connection_url, current_time( 'mysql' ) ) 
+			);
 		}
 		else {
-			$stats[$connection_url][$migration_type] = 1;
+			wp_mail( 
+				'dba@yourwebsite.com', 
+				'Pull migration complete!', 
+				sprintf( 'Hi there, we just pulled the DB from %s into %s, this occured at %s.', $connection_url, home_url(), current_time( 'mysql' ) ) 
+			);
 		}
-		
-		update_option( $slug, $stats );
 	}
 
 	/**
