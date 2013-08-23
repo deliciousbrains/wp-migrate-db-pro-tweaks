@@ -29,7 +29,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function init() {
 		// Uncomment the following lines to initiate a filter
 
-		//add_filter( 'wpmdb_migration_complete', array( $this, 'migration_complete', 10, 2 );
+		//add_filter( 'wpmdb_migration_complete', array( $this, 'migration_complete' ), 10, 2 );
 		//add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ), 10, 2 );
 		//add_filter( 'wpmdb_sensible_pull_limit', array( $this, 'sensible_pull_limit' ), 10, 2 );
 		//add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
@@ -68,20 +68,22 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * In this example, we send an email to the DBA once a migration has completed.
 	*/
 	function migration_complete( $migration_type, $connection_url ) {
-		if( $migration_type == 'push' ) {
-			wp_mail( 
-				'dba@yourwebsite.com', 
-				'Push migration complete!', 
-				sprintf( 'Hi there, we just pushed the DB from %s to %s, this occured at %s.', home_url(), $connection_url, current_time( 'mysql' ) ) 
-			);
+		$email = 'dba@yourwebsite.com';
+		$subject = sprintf( '%s migration complete!', ucfirst( $migration_type ) );
+		
+		if ( 'push' == $migration_type ) {		
+			$migration_from = home_url();
+			$migration_to = $connection_url;
 		}
 		else {
-			wp_mail( 
-				'dba@yourwebsite.com', 
-				'Pull migration complete!', 
-				sprintf( 'Hi there, we just pulled the DB from %s into %s, this occured at %s.', $connection_url, home_url(), current_time( 'mysql' ) ) 
-			);
+			$migration_from = $connection_url;
+			$migration_to = home_url();
 		}
+		
+		$body = sprintf( 'Hi there, we just %sed the DB from %s to %s, this occured at %s.', 
+			$migration_type, $migration_from, $migration_to, current_time( 'mysql' ) );
+
+		wp_mail( $email, $subject, $body );
 	}
 
 	/**
