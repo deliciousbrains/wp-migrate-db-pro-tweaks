@@ -38,7 +38,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_default_remote_post_timeout', array( $this, 'default_remote_post_timeout' ) );
 		//add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
-		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ) );
+		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_where', array( $this, 'rows_where' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_order_by', array( $this, 'rows_order_by' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_sql', array( $this, 'rows_sql' ), 10, 2 );
@@ -141,7 +141,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * We use the SHOW CREATE TABLE query to determine the SQL that is required to create the WordPress tables.
 	 * The example below demonstrates a charset change.
 	*/
-	function create_table_query( $create_table_query ) {
+	function create_table_query( $create_table_query, $table ) {
 		return str_replace( 'CHARSET=latin1', 'CHARSET=utf8', $create_table_query );
 	}
 
