@@ -40,6 +40,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
 		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ) );
 		//add_filter( 'wpmdb_rows_where', array( $this, 'create_table_query' ), 10, 2 );
+		//add_filter( 'wpmdb_rows_order_by', array( $this, 'rows_order_by' ), 10, 2 );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -154,6 +155,16 @@ class WP_Migrate_DB_Pro_Tweaks {
 		$where .= ( empty( $where ) ? 'WHERE ' : ' AND ' );
 		$where .= "`user_login` NOT LIKE 'admin'";
 		return $where;
+	}
+
+	/**
+	 * Alter the ORDER BY clause when selecting data to migrate
+	 * Using this filter you can change the order in which the data is selected when exporting a table's data.
+	 * The example below orders the wp_users table by the `user_registered` column.
+	*/
+	function rows_order_by( $order_by, $table ) {
+		if( 'wp_users' != $table ) return $where;
+		return "ORDER BY `user_registered` ASC";
 	}
 
 }
