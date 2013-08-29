@@ -41,6 +41,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ) );
 		//add_filter( 'wpmdb_rows_where', array( $this, 'rows_where' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_order_by', array( $this, 'rows_order_by' ), 10, 2 );
+		//add_filter( 'wpmdb_rows_sql', array( $this, 'rows_sql' ), 10, 2 );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -165,6 +166,16 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function rows_order_by( $order_by, $table ) {
 		if( 'wp_users' != $table ) return $where;
 		return "ORDER BY `user_registered` ASC";
+	}
+
+	/**
+	 * Alter any part of the entire SELECT statement used to determine the data exported during a migration.
+	 * You can any string manipulation functions you wish to change the SELECT statement as you please.
+	 * The example below adds an arbitrary GROUP BY clause to a custom table
+	*/
+	function rows_sql( $sql, $table ) {
+		if( 'wp_product_sales' != $table ) return $sql;
+		return str_replace( 'LIMIT', 'GROUP BY `sales_country` LIMIT', $sql );
 	}
 
 }
