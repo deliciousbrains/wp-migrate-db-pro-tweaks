@@ -37,6 +37,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_upload_dir_name', array( $this, 'upload_dir_name' ) );
 		//add_filter( 'wpmdb_default_remote_post_timeout', array( $this, 'default_remote_post_timeout' ) );
 		//add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
+		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -119,6 +120,15 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function default_remote_post_timeout( $timeout ) {
 		return 60 * 30;
+	}
+
+	/**
+	 * We display a warning on the WP Migrate DB migration form the the current environment
+	 * has PHP's safe mode enabled. To dismiss this warning, simply return true in hooked function.
+	 * Default is false.
+	*/
+	function hide_safe_mode_warning() {
+		return true;
 	}
 
 }
