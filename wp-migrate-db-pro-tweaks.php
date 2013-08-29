@@ -44,6 +44,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_rows_sql', array( $this, 'rows_sql' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
+		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -199,6 +200,16 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function alter_table_name( $table_name ) {
 		global $wpdb;
 		return $wpdb->prefix . 'alter_queries';
+	}
+
+	/**
+	 * Defines a timeout that is used when making the first initial request to the remote server.
+	 * It occurs when the user pastes the remote connection information into the local machines connection box.
+	 * Value in seconds.
+	 * Default is 10
+	*/
+	function prepare_remote_connection_timeout( $timeout ) {
+		return 20;
 	}
 
 }
