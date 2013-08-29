@@ -164,7 +164,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below orders the wp_users table by the `user_registered` column.
 	*/
 	function rows_order_by( $order_by, $table ) {
-		if( 'wp_users' != $table ) return $where;
+		if( 'wp_users' != $table ) return $order_by;
 		return "ORDER BY `user_registered` ASC";
 	}
 
