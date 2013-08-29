@@ -27,7 +27,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	}
 
 	function init() {
-		// Uncomment the following lines to initiate a filter
+		// Uncomment the following lines to initiate an action / filter
 
 		//add_filter( 'wpmdb_migration_complete', array( $this, 'migration_complete' ), 10, 2 );
 		//add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ), 10, 2 );
@@ -47,25 +47,45 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
 	}
 
-	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
-	// when the database is overwritten in a migration. This filter allows 
-	// you to define additional options to preserve
+	/**
+	* By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved when the database is overwritten in a migration.
+	* This filter allows you to define additional options (from wp_options) to preserve during a migration.
+	* The example below preserves the 'blogname' value though any number of additional options may be added.
+	*/
 	function preserved_options( $options ) {
 		$options[] = 'blogname';
 		return $options;
 	}
 
-	// Override the temporary table name prefix
+	/**
+	 * When migrating tables we assign them a temporary prefix so that they don't directly override existing tables 
+	 * on the remote website. Once all the tables have been migrated we drop the existing tables and rename the 
+	 * tables with the temporary prefix to their original names. e.g. _mig_wp_options becomes wp_options
+	 * This filter allows you to alter that temporary prefix.
+	 * The default is _mig_
+	*/
 	function temporary_prefix( $prefix ) {
-		return 'mig_';
+		return '_m_';
 	}
 
-	// Force bottleneck
+	/**
+	 * This filter defines the absolute max upper limit size of a POST request body.
+	 * Reduce this value if you're running into memory or other environmental server issues.
+	 * This will only effect push migrations.
+	 * Value in bytes.
+	 * The default is determined by your post_max_size and a few other variables.
+	*/
 	function bottleneck( $bytes ) {
 		return 1024 * 1024; // 1MB
 	}
 
-	// Force pull limit
+	/**
+	 * This filter defines the absolute max upper limit size of a request body.
+	 * Reduce this value if you're running into memory or other environmental server issues.
+	 * This will only effect pull migrations.
+	 * Value in bytes.
+	 * The default is 26214400 bytes (25mb).
+	*/
 	function sensible_pull_limit( $bytes ) {
 		return 1024 * 1024; // 1MB
 	}
@@ -102,8 +122,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function upload_info() {
 		// The returned data needs to be in a very specific format, see below for example
 		return array(
-			'path' 	=> '/path/to/custom/uploads/directory', // <- note missing end trailing slash
-			'url'	=> 'http://yourwebsite.com/custom/uploads/directory' // <- note missing end trailing slash
+			'path' 	=> '/path/to/custom/uploads/directory', // note missing end trailing slash
+			'url'	=> 'http://yourwebsite.com/custom/uploads/directory' // note missing end trailing slash
 		);
 	}
 
@@ -155,7 +175,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below excludes the admin user from being migrated to the remote site.
 	*/
 	function rows_where( $where, $table ) {
-		if( 'wp_users' != $table ) return $where;
+		global $wpdb;
+		if( $wpdb->prefix . 'users' != $table ) return $where;
 		$where .= ( empty( $where ) ? 'WHERE ' : ' AND ' );
 		$where .= "`user_login` NOT LIKE 'admin'";
 		return $where;
@@ -167,7 +188,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below orders the wp_users table by the `user_registered` column.
 	*/
 	function rows_order_by( $order_by, $table ) {
-		if( 'wp_users' != $table ) return $order_by;
+		global $wpdb;
+		if( $wpdb->prefix . 'users' != $table ) return $order_by;
 		return "ORDER BY `user_registered` ASC";
 	}
 
@@ -177,7 +199,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below adds an arbitrary GROUP BY clause to a custom table
 	*/
 	function rows_sql( $sql, $table ) {
-		if( 'wp_product_sales' != $table ) return $sql;
+		global $wpdb;
+		if( $wpdb->prefix . 'product_sales' != $table ) return $sql;
 		return str_replace( 'LIMIT', 'GROUP BY `sales_country` LIMIT', $sql );
 	}
 
