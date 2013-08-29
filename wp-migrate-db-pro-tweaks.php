@@ -39,6 +39,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
 		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ) );
+		//add_filter( 'wpmdb_rows_where', array( $this, 'create_table_query' ), 10, 2 );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -140,6 +141,19 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function create_table_query( $create_table_query ) {
 		return str_replace( 'CHARSET=latin1', 'CHARSET=utf8', $create_table_query );
+	}
+
+	/**
+	 * Alter the WHERE clause when selecting data to migrate
+	 * Using this filter you can exclude certain data from the migration.
+	 * You must first check if the $where variable is empty and alter your return value accordingly.
+	 * The example below excludes the admin user from being migrated to the remote site.
+	*/
+	function rows_where( $where, $table ) {
+		if( 'wp_users' != $table ) return $where;
+		$where .= ( empty( $where ) ? 'WHERE ' : ' AND ' );
+		$where .= "`user_login` NOT LIKE 'admin'";
+		return $where;
 	}
 
 }
