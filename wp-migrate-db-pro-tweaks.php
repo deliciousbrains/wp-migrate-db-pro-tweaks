@@ -38,6 +38,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_default_remote_post_timeout', array( $this, 'default_remote_post_timeout' ) );
 		//add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
+		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ) );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -129,6 +130,16 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function hide_safe_mode_warning() {
 		return true;
+	}
+
+	/**
+	 * Alters the CREATE TABLE SQL query
+	 * There might be a certain circumstance where you need your tables to be created differently than the default method.
+	 * We use the SHOW CREATE TABLE query to determine the SQL that is required to create the WordPress tables.
+	 * The example below demonstrates a charset change.
+	*/
+	function create_table_query( $create_table_query ) {
+		return str_replace( 'CHARSET=latin1', 'CHARSET=utf8', $create_table_query );
 	}
 
 }
