@@ -30,7 +30,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		// Uncomment the following lines to initiate an action / filter
 
 		//add_filter( 'wpmdb_migration_complete', array( $this, 'migration_complete' ), 10, 2 );
-		//add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ), 10, 2 );
+		//add_filter( 'wpmdb_bottleneck', array( $this, 'bottleneck' ) );
 		//add_filter( 'wpmdb_sensible_pull_limit', array( $this, 'sensible_pull_limit' ), 10, 2 );
 		//add_filter( 'wpmdb_temporary_prefix', array( $this, 'temporary_prefix' ) );
 		//add_filter( 'wpmdb_upload_info', array( $this, 'upload_info' ) );
