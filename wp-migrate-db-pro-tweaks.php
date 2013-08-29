@@ -42,6 +42,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_rows_where', array( $this, 'rows_where' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_order_by', array( $this, 'rows_order_by' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_sql', array( $this, 'rows_sql' ), 10, 2 );
+		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -176,6 +177,15 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function rows_sql( $sql, $table ) {
 		if( 'wp_product_sales' != $table ) return $sql;
 		return str_replace( 'LIMIT', 'GROUP BY `sales_country` LIMIT', $sql );
+	}
+
+	/**
+	 * Alters the number of table rows stored in memory while the table is being processed.
+	 * Reduce this number if you're running into memory problems.
+	 * Default is 100
+	*/
+	function rows_per_segment( $rows ) {
+		return 50;
 	}
 
 }
