@@ -43,6 +43,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_rows_order_by', array( $this, 'rows_order_by' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_sql', array( $this, 'rows_sql' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
+		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
 	}
 
 	// By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved
@@ -186,6 +187,18 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function rows_per_segment( $rows ) {
 		return 50;
+	}
+
+	/**
+	 * We create a special table that stores ALTER queries during the migration.
+	 * This allows us to run these queries at the very end of the migration to prevent issues
+	 * with SQL contraints. You may alter the name of this table using this filter.
+	 * Default is wp_wpmdb_alter_statements
+	 *
+	*/
+	function alter_table_name( $table_name ) {
+		global $wpdb;
+		return $wpdb->prefix . 'alter_queries';
 	}
 
 }
