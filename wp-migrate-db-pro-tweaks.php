@@ -40,8 +40,6 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
 		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_where', array( $this, 'rows_where' ), 10, 2 );
-		//add_filter( 'wpmdb_rows_order_by', array( $this, 'rows_order_by' ), 10, 2 );
-		//add_filter( 'wpmdb_rows_sql', array( $this, 'rows_sql' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
@@ -180,25 +178,6 @@ class WP_Migrate_DB_Pro_Tweaks {
 		$where .= ( empty( $where ) ? 'WHERE ' : ' AND ' );
 		$where .= "`user_login` NOT LIKE 'admin'";
 		return $where;
-	}
-
-	/**
-	 * Alter the ORDER BY clause when selecting data to migrate
-	 * Using this filter you can change the order in which the data is selected when exporting a table's data.
-	 * The example below orders the wp_users table by the `user_registered` column.
-	*/
-	function rows_order_by( $order_by, $table ) {
-		global $wpdb;
-		if( $wpdb->prefix . 'users' != $table ) return $order_by;
-		return "ORDER BY `user_registered` ASC";
-	}
-
-	/**
-	 * Alter any part of the entire SELECT statement used to determine the data exported during a migration.
-	 * You can any string manipulation functions you wish to change the SELECT statement as you please.
-	*/
-	function rows_sql( $sql, $table ) {
-		return $sql;
 	}
 
 	/**
