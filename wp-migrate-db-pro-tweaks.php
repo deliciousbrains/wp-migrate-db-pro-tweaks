@@ -196,12 +196,9 @@ class WP_Migrate_DB_Pro_Tweaks {
 	/**
 	 * Alter any part of the entire SELECT statement used to determine the data exported during a migration.
 	 * You can any string manipulation functions you wish to change the SELECT statement as you please.
-	 * The example below adds an arbitrary GROUP BY clause to a custom table
 	*/
 	function rows_sql( $sql, $table ) {
-		global $wpdb;
-		if( $wpdb->prefix . 'product_sales' != $table ) return $sql;
-		return str_replace( 'LIMIT', 'GROUP BY `sales_country` LIMIT', $sql );
+		return $sql;
 	}
 
 	/**
