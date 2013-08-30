@@ -162,10 +162,10 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * Alters the CREATE TABLE SQL query
 	 * There might be a certain circumstance where you need your tables to be created differently than the default method.
 	 * We use the SHOW CREATE TABLE query to determine the SQL that is required to create the WordPress tables.
-	 * The example below demonstrates a charset change.
+	 * The example below demonstrates an engine change.
 	*/
 	function create_table_query( $create_table_query, $table ) {
-		return str_replace( 'CHARSET=latin1', 'CHARSET=utf8', $create_table_query );
+		return str_ireplace( 'ENGINE=aria', 'ENGINE=InnoDB', $create_table_query );
 	}
 
 	/**
