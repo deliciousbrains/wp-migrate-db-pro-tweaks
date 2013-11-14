@@ -43,6 +43,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
+
+		//add_filter( 'http_request_host_is_external', array( $this, 'allow_local_requests' ), 10, 3 );
 	}
 
 	/**
@@ -209,6 +211,14 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function prepare_remote_connection_timeout( $timeout ) {
 		return 20;
+	}
+
+	/**
+	 * Allows downloads / updates to originate from dev.deliciousbrains.com
+	*/
+	function allow_local_requests( $current, $host, $url ) {
+		if( false === strpos( $url, 'dev.deliciousbrains.com' ) ) return $current;
+		return true;
 	}
 
 }
