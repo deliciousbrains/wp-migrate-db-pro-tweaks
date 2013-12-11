@@ -43,6 +43,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
+		//add_filter( 'admin_menu', array( $this, 'remove_menu_item' ) );
 	}
 
 	/**
@@ -209,6 +210,14 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function prepare_remote_connection_timeout( $timeout ) {
 		return 20;
+	}
+
+	/**
+	 * Removes the WP Migrate DB Pro menu item from Tools -> Migrate DB Pro
+	 * The page is still accessible if you directly navigate to http://your-website.com/wp-admin/tools.php?page=wp-migrate-db-pro
+	*/
+	function remove_menu_item(){
+		remove_submenu_page( 'tools.php', 'wp-migrate-db-pro' );
 	}
 
 }
