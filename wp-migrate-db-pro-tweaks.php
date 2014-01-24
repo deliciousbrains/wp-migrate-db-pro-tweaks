@@ -44,6 +44,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
 		//add_filter( 'admin_menu', array( $this, 'remove_menu_item' ) );
+		//add_filter( 'wpmdb_domain_replaces', array( $this, 'add_additional_domain_replaces' ) );
 	}
 
 	/**
@@ -218,6 +219,20 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function remove_menu_item(){
 		remove_submenu_page( 'tools.php', 'wp-migrate-db-pro' );
+	}
+
+	/**
+	 * Only useful for those wanting to update domain mapped subsites in a multisite installation
+	 * Must return an array in the following format:
+	 * array(
+	 * 		'regex pattern' => 'replace value'
+	 * );
+	 * See actual example of this in the code below
+	*/
+	function add_additional_domain_replaces( $replaces ) {
+		$replaces['/bananas.dev/'] = 'bananas.com';
+		$replaces['/apple.dev/'] = 'apples.com';
+		return $replaces;
 	}
 
 }
