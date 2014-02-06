@@ -23,7 +23,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 
 	function __construct() {
 		if ( !is_admin() ) return;
-		add_action( 'init', array( $this, 'init' ), 9 );
+		add_action( 'init', array( $this, 'init' ), 4 );
 	}
 
 	function init() {
