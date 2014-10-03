@@ -45,6 +45,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
 		//add_filter( 'admin_menu', array( $this, 'remove_menu_item' ) );
 		//add_filter( 'wpmdb_domain_replaces', array( $this, 'add_additional_domain_replaces' ) );
+		//add_filter( 'wpmdb_pre_recursive_unserialize_replace', array( $this, 'pre_recursive_unserialize_replace' ), 10, 3 );
+		//add_filter( 'wpmdb_replace_custom_data', array( $this, 'replace_custom_data' ), 10, 2 );
 	}
 
 	/**
@@ -58,8 +60,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	}
 
 	/**
-	 * When migrating tables we assign them a temporary prefix so that they don't directly override existing tables 
-	 * on the remote website. Once all the tables have been migrated we drop the existing tables and rename the 
+	 * When migrating tables we assign them a temporary prefix so that they don't directly override existing tables
+	 * on the remote website. Once all the tables have been migrated we drop the existing tables and rename the
 	 * tables with the temporary prefix to their original names. e.g. _mig_wp_options becomes wp_options
 	 * This filter allows you to alter that temporary prefix.
 	 * The default is _mig_
@@ -98,8 +100,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function migration_complete( $migration_type, $connection_url ) {
 		$email = 'dba@yourwebsite.com';
 		$subject = sprintf( '%s migration complete!', ucfirst( $migration_type ) );
-		
-		if ( 'push' == $migration_type ) {		
+
+		if ( 'push' == $migration_type ) {
 			$migration_from = home_url();
 			$migration_to = $connection_url;
 		}
@@ -107,8 +109,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 			$migration_from = $connection_url;
 			$migration_to = home_url();
 		}
-		
-		$body = sprintf( 'Hi there, we just %sed the DB from %s to %s, this occured at %s.', 
+
+		$body = sprintf( 'Hi there, we just %sed the DB from %s to %s, this occured at %s.',
 			$migration_type, $migration_from, $migration_to, current_time( 'mysql' ) );
 
 		wp_mail( $email, $subject, $body );
@@ -233,6 +235,80 @@ class WP_Migrate_DB_Pro_Tweaks {
 		$replaces['/bananas.dev/'] = 'bananas.com';
 		$replaces['/apple.dev/'] = 'apples.com';
 		return $replaces;
+	}
+
+	/**
+	 * Allows developers to hijack the find/replace process allowing them to massage database field values during a migration.
+	 *
+	 * Returning anything other than boolean false in this function will short-circuit the find/replace process and
+	 * instead use the data returned by this function.
+	 *
+	 * The hooked function will run across every field value in the database, ensure that the code is optimized for
+	 * speed. CPU and file I/O intensive code will massively slow down the migration.
+	 *
+	 * The example below massages base64 encoded data by performing an arbitrary string replace.
+	 *
+	 * @param  mixed  $pre           Either boolean false or the massaged data from another hooked function.
+	 * @param  mixed  $data          A specific database field value.
+	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
+	 * @return mixed                 Either boolean false or the massaged data.
+	 */
+	function pre_recursive_unserialize_replace( $pre, $data, $wpmdb_replace ) {
+		// This data has already been processed by another hooked function, do not process it again.
+		if ( false !== $pre ) {
+			return $pre;
+		}
+
+		// Only process data from a certain table in our database.
+		if ( false === strpos( $wpmdb_replace->table, 'base64_data' ) ) {
+			return $pre;
+		}
+
+		$data = base64_decode( trim( $data ), true );
+
+		// We're only interested in massaging base64 encoded data, exit early if we detect non base64 encoded data.
+		if ( false === $data ) {
+			return $pre;
+		}
+
+		// Arbitrary string replace, used for example purposes only.
+		// You probably want something more meaningful here.
+		$data = str_replace( 'http://old.example.com', 'http://new.example.com', $data );
+
+		return base64_encode( $data );
+	}
+
+	/**
+	 * Allows developers to massage database string field values during a migration.
+	 *
+	 * Similar to the wpmdb_pre_recursive_unserialize_replace function but occurs later and only triggers once the data
+	 * has been simplified down to a string data type. As such the returned massaged data must also be a string.
+	 *
+	 * The hooked function will run across every field value in the database, ensure that the code is optimized for
+	 * speed. CPU and file I/O intensive code will massively slow down the migration.
+	 *
+	 * The example below changes all status of all comments to "closed"
+	 *
+	 * @param  array  $args          An array containing a database string field value and a boolean value.
+	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
+	 * @return array                 An array containing the massaged string field value and a boolean value.
+	 */
+	function replace_custom_data( $args, $wpmdb_replace ) {
+		// This data has already been processed by another hooked function, do not process it again.
+		if ( false === $args[1] ) {
+			return $args;
+		}
+
+		// Arbitrary functionality below. Changes all comment's comment_status to "closed".
+		// You probably want something more meaningful here.
+		if ( false === strpos( $wpmdb_replace->table, 'posts' ) || 'comment_status' !== $wpmdb_replace->column ) {
+			return $args;
+		}
+
+		$args[0] = 'closed';
+		$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
+
+		return $args;
 	}
 
 }
