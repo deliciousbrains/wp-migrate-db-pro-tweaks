@@ -259,17 +259,30 @@ class WP_Migrate_DB_Pro_Tweaks {
 			return $pre;
 		}
 
+		// Do not process an empty field value.
+		if ( empty( $data ) ) {
+			return $pre;
+		}
+
 		// Only process data from a certain table in our database.
-		if ( false === strpos( $wpmdb_replace->table, 'base64_data' ) ) {
+		if ( false === $wpmdb_replace->table_is( 'options' ) ) {
 			return $pre;
 		}
 
+		$row = $wpmdb_replace->get_row();
+
+		// Only process data from a certain row in our database. e.g. an option in the wp_options table
+		if ( ! isset( $row->option_name ) || 'b64_encoded_site_address' !== $row->option_name ) {
+			return $pre;
+		}
+
+		// Only process data from a certain column in our database.
+		if ( 'option_value' !== $wpmdb_replace->get_column() ) {
+			return $pre;
+		}
+
+		// At this point we assume that the data must be base64 encoded.
 		$data = base64_decode( trim( $data ), true );
-
-		// We're only interested in massaging base64 encoded data, exit early if we detect non base64 encoded data.
-		if ( false === $data ) {
-			return $pre;
-		}
 
 		// Arbitrary string replace, used for example purposes only.
 		// You probably want something more meaningful here.
@@ -287,7 +300,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The hooked function will run across every field value in the database, ensure that the code is optimized for
 	 * speed. CPU and file I/O intensive code will massively slow down the migration.
 	 *
-	 * The example below changes all status of all comments to "closed"
+	 * The example below anonymizes email addresses.
 	 *
 	 * @param  array  $args          An array containing a database string field value and a boolean value.
 	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
@@ -299,14 +312,12 @@ class WP_Migrate_DB_Pro_Tweaks {
 			return $args;
 		}
 
-		// Arbitrary functionality below. Changes all comment's comment_status to "closed".
+		// Replaces all instances of email addresses to example@example.com to protect against email harvesters.
 		// You probably want something more meaningful here.
-		if ( false === strpos( $wpmdb_replace->table, 'posts' ) || 'comment_status' !== $wpmdb_replace->column ) {
-			return $args;
+		if ( is_email( $args[0] ) ) {
+			$args[0] = 'example@example.com';
+			$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
 		}
-
-		$args[0] = 'closed';
-		$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
 
 		return $args;
 	}
