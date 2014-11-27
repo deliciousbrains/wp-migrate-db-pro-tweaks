@@ -314,8 +314,11 @@ class WP_Migrate_DB_Pro_Tweaks {
 		// Replaces all instances of email addresses to example@example.com to protect against email harvesters.
 		// You probably want something more meaningful here.
 		if ( is_email( $args[0] ) ) {
-			$args[0] = 'example@example.com';
-			$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
+			// do the replacement only if it is a push (not pull)
+			if ( 'push' == $wpmdb_replace->get_intent() ) {
+				$args[0] = 'example@example.com';
+				$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
+			}
 		}
 
 		return $args;
