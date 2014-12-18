@@ -22,10 +22,6 @@ Author URI: http://deliciousbrains.com
 class WP_Migrate_DB_Pro_Tweaks {
 
 	function __construct() {
-		add_action( 'init', array( $this, 'init' ), 9 );
-	}
-
-	function init() {
 		// Uncomment the following lines to initiate an action / filter
 
 		//add_action( 'wpmdb_migration_complete', array( $this, 'migration_complete' ), 10, 2 );
