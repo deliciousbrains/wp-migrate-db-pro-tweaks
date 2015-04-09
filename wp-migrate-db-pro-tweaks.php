@@ -313,6 +313,57 @@ class WP_Migrate_DB_Pro_Tweaks {
 		return $args;
 	}
 
+	/**
+	 * Allows developers to massage database field values before performing the recursive find and replace.
+	 *
+	 * The hooked function can run across every field value in the database, ensure that the code is optimized for
+	 * speed. CPU and file I/O intensive code will massively slow down the migration.
+	 *
+	 * The below example decodes base64 data for use in Muffin Builder prior to performing the find and replace.
+	 *
+	 * @param  array  $args          An array containing a database field value, a boolean indicating if before fired
+	 *                               and a boolean value indicating whether to fire this action recursively.
+	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
+	 *
+	 * @return array                 An array containing the massaged string field value and a boolean value.
+	 */
+	function before_replace_custom_data( $args, $wpmdb_replace ) {
+		// Only process data from a certain table in our database.
+		if ( false === $wpmdb_replace->table_is( 'postmeta' ) ) {
+			return $args;
+		}
+
+		$row = $wpmdb_replace->get_row();
+
+		// Only process data from a certain row in our database. e.g. an option in the wp_options table
+		if ( ! isset( $row->meta_key ) || 'mfn-page-items' !== $row->meta_key ) {
+			return $args;
+		}
+
+		// Only process data from a certain column in our database.
+		if ( 'meta_value' !== $wpmdb_replace->get_column() ) {
+			return $args;
+		}
+
+		// Ensure data is a string
+		if ( ! is_string( $args[0] ) ) {
+			return $args;
+		}
+
+		// Decode the data
+		if ( $decoded = base64_decode( trim( $args[0] ), true ) ) {
+			// Processed data
+			$args[0] = $decoded;
+			// True here informs the `wpmdb_after_replace_custom_data` filter that `wpmdb_before_replace_custom_data` has fired.
+			// This allows you to fire the before and after filters in pairs (see below method).
+			$args[1] = true;
+			// False here signifies that we don't want to perform this filter recursively.
+			$args[2] = false;
+		}
+
+		return $args;
+	}
+
 }
 
 new WP_Migrate_DB_Pro_Tweaks();
