@@ -193,7 +193,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	/**
 	 * We create a special table that stores ALTER queries during the migration.
 	 * This allows us to run these queries at the very end of the migration to prevent issues
-	 * with SQL contraints. You may alter the name of this table using this filter.
+	 * with SQL constraints. You may alter the name of this table using this filter.
 	 * Default is wp_wpmdb_alter_statements
 	 *
 	*/
@@ -245,7 +245,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 *
 	 * @param  mixed  $pre           Either boolean false or the massaged data from another hooked function.
 	 * @param  mixed  $data          A specific database field value.
-	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
+	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
 	 * @return mixed                 Either boolean false or the massaged data.
 	 */
 	function pre_recursive_unserialize_replace( $pre, $data, $wpmdb_replace ) {
@@ -294,7 +294,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below anonymizes email addresses.
 	 *
 	 * @param  array  $args          An array containing a database string field value and a boolean value.
-	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
+	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
 	 * @return array                 An array containing the massaged string field value and a boolean value.
 	 */
 	function replace_custom_data( $args, $wpmdb_replace ) {
