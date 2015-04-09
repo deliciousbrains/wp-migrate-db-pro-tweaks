@@ -241,8 +241,6 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The hooked function will run across every field value in the database, ensure that the code is optimized for
 	 * speed. CPU and file I/O intensive code will massively slow down the migration.
 	 *
-	 * The example below massages base64 encoded data by performing an arbitrary string replace.
-	 *
 	 * @param  mixed  $pre           Either boolean false or the massaged data from another hooked function.
 	 * @param  mixed  $data          A specific database field value.
 	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
@@ -267,7 +265,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		$row = $wpmdb_replace->get_row();
 
 		// Only process data from a certain row in our database. e.g. an option in the wp_options table
-		if ( ! isset( $row->option_name ) || 'b64_encoded_site_address' !== $row->option_name ) {
+		if ( ! isset( $row->option_name ) || 'custom_data' !== $row->option_name ) {
 			return $pre;
 		}
 
@@ -276,14 +274,10 @@ class WP_Migrate_DB_Pro_Tweaks {
 			return $pre;
 		}
 
-		// At this point we assume that the data must be base64 encoded.
-		$data = base64_decode( trim( $data ), true );
+		// Perform some arbitrary action
+		$data = rtrim( $data, 'string to remove from end of data' );
 
-		// Arbitrary string replace, used for example purposes only.
-		// You probably want something more meaningful here.
-		$data = str_replace( 'http://old.example.com', 'http://new.example.com', $data );
-
-		return base64_encode( $data );
+		return $data;
 	}
 
 	/**
