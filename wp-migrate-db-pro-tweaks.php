@@ -41,7 +41,9 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'admin_menu', array( $this, 'remove_menu_item' ) );
 		//add_filter( 'wpmdb_domain_replaces', array( $this, 'add_additional_domain_replaces' ) );
 		//add_filter( 'wpmdb_pre_recursive_unserialize_replace', array( $this, 'pre_recursive_unserialize_replace' ), 10, 3 );
+		//add_filter( 'wpmdb_before_replace_custom_data', array( $this, 'before_replace_custom_data' ), 10, 2 );
 		//add_filter( 'wpmdb_replace_custom_data', array( $this, 'replace_custom_data' ), 10, 2 );
+		//add_filter( 'wpmdb_after_replace_custom_data', array( $this, 'after_replace_custom_data' ), 10, 3 );
 	}
 
 	/**
