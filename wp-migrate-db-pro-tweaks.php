@@ -228,7 +228,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function add_additional_domain_replaces( $replaces ) {
 		$replaces['/bananas.dev/'] = 'bananas.com';
-		$replaces['/apple.dev/'] = 'apples.com';
+		$replaces['/apples.dev/'] = 'apples.com';
 		return $replaces;
 	}
 
