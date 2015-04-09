@@ -364,6 +364,54 @@ class WP_Migrate_DB_Pro_Tweaks {
 		return $args;
 	}
 
+	/**
+	 * Allows developers to massage database field values after performing the recursive find and replace.
+	 *
+	 * The hooked function can run across every field value in the database, ensure that the code is optimized for
+	 * speed. CPU and file I/O intensive code will massively slow down the migration.
+	 *
+	 * The below example encodes base64 data for use in Muffin Builder after performing the find and replace.
+	 *
+	 * @param  array  $args          An array containing a database field value, a boolean indicating if before fired
+	 *                               and a boolean value indicating whether to fire this action recursively.
+	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
+	 *
+	 * @return string                A string containing the data.
+	 */
+	function muffin_builder_after_custom_data( $data, $before_fired, $wpmdb_replace ) {
+		// Only process if before fired
+		if ( false === $before_fired ) {
+			return $data;
+		}
+
+		// Only process data from a certain table in our database.
+		if ( false === $wpmdb_replace->table_is( 'postmeta' ) ) {
+			return $data;
+		}
+
+		$row = $wpmdb_replace->get_row();
+
+		// Only process data from a certain row in our database. e.g. an option in the wp_options table
+		if ( ! isset( $row->meta_key ) || 'mfn-page-items' !== $row->meta_key ) {
+			return $data;
+		}
+
+		// Only process data from a certain column in our database.
+		if ( 'meta_value' !== $wpmdb_replace->get_column() ) {
+			return $data;
+		}
+
+		// Ensure data is a string
+		if ( ! is_string( $data ) ) {
+			return $data;
+		}
+
+		// Re-encode the data
+		$data = base64_encode( $data );
+
+		return $data;
+	}
+
 }
 
 new WP_Migrate_DB_Pro_Tweaks();
