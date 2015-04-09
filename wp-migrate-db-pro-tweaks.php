@@ -147,7 +147,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	}
 
 	/**
-	 * We display a warning on the WP Migrate DB migration form the the current environment
+	 * We display a warning on the WP Migrate DB migration form the current environment
 	 * has PHP's safe mode enabled. To dismiss this warning, simply return true in hooked function.
 	 * Default is false.
 	*/
@@ -191,7 +191,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	/**
 	 * We create a special table that stores ALTER queries during the migration.
 	 * This allows us to run these queries at the very end of the migration to prevent issues
-	 * with SQL contraints. You may alter the name of this table using this filter.
+	 * with SQL constraints. You may alter the name of this table using this filter.
 	 * Default is wp_wpmdb_alter_statements
 	 *
 	*/
@@ -245,7 +245,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 *
 	 * @param  mixed  $pre           Either boolean false or the massaged data from another hooked function.
 	 * @param  mixed  $data          A specific database field value.
-	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
+	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
 	 * @return mixed                 Either boolean false or the massaged data.
 	 */
 	function pre_recursive_unserialize_replace( $pre, $data, $wpmdb_replace ) {
@@ -298,7 +298,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below anonymizes email addresses.
 	 *
 	 * @param  array  $args          An array containing a database string field value and a boolean value.
-	 * @param  object $wpmdb_replace An intance of the WPMDB_Replace class.
+	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
 	 * @return array                 An array containing the massaged string field value and a boolean value.
 	 */
 	function replace_custom_data( $args, $wpmdb_replace ) {
@@ -310,8 +310,11 @@ class WP_Migrate_DB_Pro_Tweaks {
 		// Replaces all instances of email addresses to example@example.com to protect against email harvesters.
 		// You probably want something more meaningful here.
 		if ( is_email( $args[0] ) ) {
-			$args[0] = 'example@example.com';
-			$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
+			// do the replacement only if it is a push (not pull)
+			if ( 'push' == $wpmdb_replace->get_intent() ) {
+				$args[0] = 'example@example.com';
+				$args[1] = false; // False here signifies that we wish to prevent any further processing of this field value.
+			}
 		}
 
 		return $args;
