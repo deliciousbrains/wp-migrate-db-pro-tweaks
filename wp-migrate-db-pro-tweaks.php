@@ -378,7 +378,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 *
 	 * @return string                A string containing the data.
 	 */
-	function muffin_builder_after_custom_data( $data, $before_fired, $wpmdb_replace ) {
+	function after_replace_custom_data( $data, $before_fired, $wpmdb_replace ) {
 		// Only process if before fired
 		if ( false === $before_fired ) {
 			return $data;
