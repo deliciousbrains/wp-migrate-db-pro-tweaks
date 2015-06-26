@@ -4,7 +4,7 @@ Plugin Name: WP Migrate DB Pro Tweaks
 Plugin URI: http://github.com/deliciousbrains/wp-migrate-db-pro-tweaks
 Description: Examples of using WP Migrate DB Pro's filters
 Author: Delicious Brains
-Version: 0.1
+Version: 0.2
 Author URI: http://deliciousbrains.com
 */
 
@@ -164,7 +164,10 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The example below demonstrates an engine change.
 	*/
 	function create_table_query( $create_table_query, $table ) {
-		return str_ireplace( 'ENGINE=aria', 'ENGINE=InnoDB', $create_table_query );
+		$create_table_query = str_ireplace( 'ENGINE=aria', 'ENGINE=InnoDB', $create_table_query );
+		$create_table_query = preg_replace( '/TRANSACTIONAL\s?=\s?./', '', $create_table_query );
+
+		return $create_table_query;
 	}
 
 	/**
