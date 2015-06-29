@@ -44,6 +44,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_before_replace_custom_data', array( $this, 'before_replace_custom_data' ), 10, 2 );
 		//add_filter( 'wpmdb_replace_custom_data', array( $this, 'replace_custom_data' ), 10, 2 );
 		//add_filter( 'wpmdb_after_replace_custom_data', array( $this, 'after_replace_custom_data' ), 10, 3 );
+		//add_filter( 'wpmdb_abort_utf8mb4_to_utf8', array( $this, 'abort_utf8mb4_to_utf8' ) );
 	}
 
 	/**
@@ -415,6 +416,20 @@ class WP_Migrate_DB_Pro_Tweaks {
 		return $data;
 	}
 
+	/**
+	 * By default WP Migrate DB Pro will abort an attempt to go from utf8mb4 to utf8 in case of data loss.
+	 *
+	 * Return false for the wpmdb_abort_utf8mb4_to_utf8 filter to override this.
+	 *
+	 * @see https://deliciousbrains.com/wp-migrate-db-pro/doc/source-site-supports-utf8mb4/
+	 *
+	 * @param bool $abort_utf8mb4_to_utf8
+	 *
+	 * @return bool
+	 */
+	function abort_utf8mb4_to_utf8( $abort_utf8mb4_to_utf8 ) {
+		return false;
+	}
 }
 
 new WP_Migrate_DB_Pro_Tweaks();
