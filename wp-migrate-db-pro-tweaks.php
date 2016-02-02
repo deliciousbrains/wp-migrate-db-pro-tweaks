@@ -45,6 +45,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_replace_custom_data', array( $this, 'replace_custom_data' ), 10, 2 );
 		//add_filter( 'wpmdb_after_replace_custom_data', array( $this, 'after_replace_custom_data' ), 10, 3 );
 		//add_filter( 'wpmdb_abort_utf8mb4_to_utf8', array( $this, 'abort_utf8mb4_to_utf8' ) );
+		//add_filter( 'upload_size_limit', array( $this, 'set_default_max_upload_size' ), 10, 3 );
 	}
 
 	/**
@@ -429,6 +430,29 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 */
 	function abort_utf8mb4_to_utf8( $abort_utf8mb4_to_utf8 ) {
 		return false;
+	}
+
+	/**
+	 * If either upload_max_filesize or post_max_size are not set we should set a usable default value.
+	 *
+	 * @param int $bytes
+	 * @param int $u_bytes
+	 * @param int $p_bytes
+	 *
+	 * @return int
+	 */
+	function set_default_max_upload_size( $bytes, $u_bytes, $p_bytes ) {
+		if ( 1 > (int) $bytes ) {
+			if ( 0 < (int) $p_bytes ) {
+				$bytes = $p_bytes;
+			} elseif ( 0 < (int) $u_bytes ) {
+				$bytes = $u_bytes;
+			} else {
+				$bytes = wp_convert_hr_to_bytes( '25M' );
+			}
+		}
+
+		return $bytes;
 	}
 }
 
