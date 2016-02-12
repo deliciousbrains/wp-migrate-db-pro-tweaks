@@ -33,7 +33,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_default_remote_post_timeout', array( $this, 'default_remote_post_timeout' ) );
 		//add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
-		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ), 10, 2 );
+		add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_where', array( $this, 'rows_where' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
@@ -47,12 +47,13 @@ class WP_Migrate_DB_Pro_Tweaks {
 	}
 
 	/**
-	* By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved when the database is overwritten in a migration.
-	* This filter allows you to define additional options (from wp_options) to preserve during a migration.
-	* The example below preserves the 'blogname' value though any number of additional options may be added.
-	*/
+	 * By default, 'wpmdb_settings' and 'wpmdb_error_log' are preserved when the database is overwritten in a migration.
+	 * This filter allows you to define additional options (from wp_options) to preserve during a migration.
+	 * The example below preserves the 'blogname' value though any number of additional options may be added.
+	 */
 	function preserved_options( $options ) {
 		$options[] = 'blogname';
+
 		return $options;
 	}
 
@@ -62,7 +63,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * tables with the temporary prefix to their original names. e.g. _mig_wp_options becomes wp_options
 	 * This filter allows you to alter that temporary prefix.
 	 * The default is _mig_
-	*/
+	 */
 	function temporary_prefix( $prefix ) {
 		return '_m_';
 	}
@@ -73,7 +74,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * This will only effect push migrations.
 	 * Value in bytes.
 	 * The default is determined by your post_max_size and a few other variables.
-	*/
+	 */
 	function bottleneck( $bytes ) {
 		return 1024 * 1024; // 1MB
 	}
@@ -84,7 +85,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * This will only effect pull migrations.
 	 * Value in bytes.
 	 * The default is 26214400 bytes (25mb).
-	*/
+	 */
 	function sensible_pull_limit( $bytes ) {
 		return 1024 * 1024; // 1MB
 	}
@@ -93,18 +94,17 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * This action fires after a migration has been successfully completed.
 	 * It will fire on both the local and remote machines.
 	 * In this example, we send an email to the DBA once a migration has completed.
-	*/
+	 */
 	function migration_complete( $migration_type, $connection_url ) {
-		$email = 'dba@yourwebsite.com';
+		$email   = 'dba@yourwebsite.com';
 		$subject = sprintf( '%s migration complete!', ucfirst( $migration_type ) );
 
 		if ( 'push' == $migration_type ) {
 			$migration_from = home_url();
-			$migration_to = $connection_url;
-		}
-		else {
+			$migration_to   = $connection_url;
+		} else {
 			$migration_from = $connection_url;
-			$migration_to = home_url();
+			$migration_to   = home_url();
 		}
 
 		$body = sprintf( 'Hi there, we just %sed the DB from %s to %s, this occured at %s.',
@@ -117,12 +117,12 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * Custom file upload directory and URL
 	 * If using the "Export" or "Backup" features in WP Migrate DB Pro we will need to write files to your filesystem.
 	 * This filter allows you to define a custom folder to write to.
-	*/
+	 */
 	function upload_info() {
 		// The returned data needs to be in a very specific format, see below for example
 		return array(
-			'path' 	=> '/path/to/custom/uploads/directory', // note missing end trailing slash
-			'url'	=> 'http://yourwebsite.com/custom/uploads/directory' // note missing end trailing slash
+			'path' => '/path/to/custom/uploads/directory', // note missing end trailing slash
+			'url'  => 'http://yourwebsite.com/custom/uploads/directory' // note missing end trailing slash
 		);
 	}
 
@@ -132,7 +132,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * The default name is 'wp-migrate-db' and the default path is 'wp-content/uploads/wp-migrate-db'.
 	 * Please use standard folder naming conventions, no spaces, no underscores, no caps, no special characters, etc
 	 * Note: you cannot use this filter if you're already using the filter above, it will be ignored.
-	*/
+	 */
 	function upload_dir_name() {
 		return 'database-dumps';
 	}
@@ -143,7 +143,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * Is used when requesting SQL from the server or when transferring SQL to a remote server.
 	 * Value in seconds.
 	 * Default is 60 * 20 (20 minutes)
-	*/
+	 */
 	function default_remote_post_timeout( $timeout ) {
 		return 60 * 30;
 	}
@@ -152,7 +152,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * We display a warning on the WP Migrate DB migration form the current environment
 	 * has PHP's safe mode enabled. To dismiss this warning, simply return true in hooked function.
 	 * Default is false.
-	*/
+	 */
 	function hide_safe_mode_warning() {
 		return true;
 	}
@@ -162,10 +162,14 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * There might be a certain circumstance where you need your tables to be created differently than the default method.
 	 * We use the SHOW CREATE TABLE query to determine the SQL that is required to create the WordPress tables.
 	 * The example below demonstrates an engine change.
-	*/
+	 */
 	function create_table_query( $create_table_query, $table ) {
 		$create_table_query = str_ireplace( 'ENGINE=aria', 'ENGINE=InnoDB', $create_table_query );
 		$create_table_query = preg_replace( '/TRANSACTIONAL\s?=\s?./', '', $create_table_query );
+
+		if ( 0 < stripos( $create_table_query, 'ENGINE=InnoDB' ) && 0 < stripos( $create_table_query, 'FULLTEXT KEY' ) ) {
+			$create_table_query = str_ireplace( 'ENGINE=InnoDB', 'ENGINE=MyISAM', $create_table_query );
+		}
 
 		return $create_table_query;
 	}
@@ -175,12 +179,15 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * Using this filter you can exclude certain data from the migration.
 	 * You must first check if the $where variable is empty and alter your return value accordingly.
 	 * The example below excludes the admin user from being migrated to the remote site.
-	*/
+	 */
 	function rows_where( $where, $table ) {
 		global $wpdb;
-		if( $wpdb->prefix . 'users' != $table ) return $where;
+		if ( $wpdb->prefix . 'users' != $table ) {
+			return $where;
+		}
 		$where .= ( empty( $where ) ? 'WHERE ' : ' AND ' );
 		$where .= "`user_login` NOT LIKE 'admin'";
+
 		return $where;
 	}
 
@@ -188,7 +195,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * Alters the number of table rows stored in memory while the table is being processed.
 	 * Reduce this number if you're running into memory problems.
 	 * Default is 100
-	*/
+	 */
 	function rows_per_segment( $rows ) {
 		return 50;
 	}
@@ -199,9 +206,10 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * with SQL constraints. You may alter the name of this table using this filter.
 	 * Default is wp_wpmdb_alter_statements
 	 *
-	*/
+	 */
 	function alter_table_name( $table_name ) {
 		global $wpdb;
+
 		return $wpdb->prefix . 'alter_queries';
 	}
 
@@ -210,7 +218,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * It occurs when the user pastes the remote connection information into the local machines connection box.
 	 * Value in seconds.
 	 * Default is 10
-	*/
+	 */
 	function prepare_remote_connection_timeout( $timeout ) {
 		return 20;
 	}
@@ -218,8 +226,8 @@ class WP_Migrate_DB_Pro_Tweaks {
 	/**
 	 * Removes the WP Migrate DB Pro menu item from Tools -> Migrate DB Pro
 	 * The page is still accessible if you directly navigate to http://your-website.com/wp-admin/tools.php?page=wp-migrate-db-pro
-	*/
-	function remove_menu_item(){
+	 */
+	function remove_menu_item() {
 		remove_submenu_page( 'tools.php', 'wp-migrate-db-pro' );
 	}
 
@@ -227,13 +235,14 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * Only useful for those wanting to update domain mapped subsites in a multisite installation
 	 * Must return an array in the following format:
 	 * array(
-	 * 		'regex pattern' => 'replace value'
+	 *        'regex pattern' => 'replace value'
 	 * );
 	 * See actual example of this in the code below
-	*/
+	 */
 	function add_additional_domain_replaces( $replaces ) {
 		$replaces['/bananas.dev/'] = 'bananas.com';
-		$replaces['/apples.dev/'] = 'apples.com';
+		$replaces['/apples.dev/']  = 'apples.com';
+
 		return $replaces;
 	}
 
@@ -249,6 +258,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 * @param  mixed  $pre           Either boolean false or the massaged data from another hooked function.
 	 * @param  mixed  $data          A specific database field value.
 	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
+	 *
 	 * @return mixed                 Either boolean false or the massaged data.
 	 */
 	function pre_recursive_unserialize_replace( $pre, $data, $wpmdb_replace ) {
@@ -298,6 +308,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	 *
 	 * @param  array  $args          An array containing a database string field value and a boolean value.
 	 * @param  object $wpmdb_replace An instance of the WPMDB_Replace class.
+	 *
 	 * @return array                 An array containing the massaged string field value and a boolean value.
 	 */
 	function replace_custom_data( $args, $wpmdb_replace ) {
