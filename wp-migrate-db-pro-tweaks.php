@@ -39,6 +39,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
 		//add_filter( 'wpmdb_prepare_remote_connection_timeout', array( $this, 'prepare_remote_connection_timeout' ) );
 		//add_filter( 'admin_menu', array( $this, 'remove_menu_item' ) );
+		//add_filter( 'wpmdb_subdomain_replace', array( $this, 'disable_automatic_subdomain_replaces' ) );
 		//add_filter( 'wpmdb_domain_replaces', array( $this, 'add_additional_domain_replaces' ) );
 		//add_filter( 'wpmdb_pre_recursive_unserialize_replace', array( $this, 'pre_recursive_unserialize_replace' ), 10, 3 );
 		//add_filter( 'wpmdb_before_replace_custom_data', array( $this, 'before_replace_custom_data' ), 10, 2 );
@@ -219,6 +220,14 @@ class WP_Migrate_DB_Pro_Tweaks {
 	*/
 	function remove_menu_item(){
 		remove_submenu_page( 'tools.php', 'wp-migrate-db-pro' );
+	}
+
+	/**
+	 * Disables automatic replacement of subdomain urls in subdomain based multisite installs.
+	 * This method isn't really necessary, just use '__return_false' instead.
+	 */
+	function disable_automatic_subdomain_replaces() {
+		return false;
 	}
 
 	/**
