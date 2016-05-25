@@ -33,7 +33,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 		//add_filter( 'wpmdb_default_remote_post_timeout', array( $this, 'default_remote_post_timeout' ) );
 		//add_filter( 'wpmdb_preserved_options', array( $this, 'preserved_options' ) );
 		//add_filter( 'wpmdb_hide_safe_mode_warning', array( $this, 'hide_safe_mode_warning' ) );
-		add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ), 10, 2 );
+		//add_filter( 'wpmdb_create_table_query', array( $this, 'create_table_query' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_where', array( $this, 'rows_where' ), 10, 2 );
 		//add_filter( 'wpmdb_rows_per_segment', array( $this, 'rows_per_segment' ) );
 		//add_filter( 'wpmdb_alter_table_name', array( $this, 'alter_table_name' ) );
