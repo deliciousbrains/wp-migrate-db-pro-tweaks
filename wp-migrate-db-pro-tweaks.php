@@ -167,6 +167,7 @@ class WP_Migrate_DB_Pro_Tweaks {
 	function create_table_query( $create_table_query, $table ) {
 		$create_table_query = str_ireplace( 'ENGINE=aria', 'ENGINE=InnoDB', $create_table_query );
 		$create_table_query = preg_replace( '/TRANSACTIONAL\s?=\s?./', '', $create_table_query );
+		$create_table_query = preg_replace( '/PAGE_CHECKSUM\s?=\s?./', '', $create_table_query );
 
 		if ( 0 < stripos( $create_table_query, 'ENGINE=InnoDB' ) && 0 < stripos( $create_table_query, 'FULLTEXT KEY' ) ) {
 			$create_table_query = str_ireplace( 'ENGINE=InnoDB', 'ENGINE=MyISAM', $create_table_query );
