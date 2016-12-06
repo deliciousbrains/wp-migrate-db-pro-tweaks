@@ -6,7 +6,7 @@ This is a WordPress plugin, meant as a starting point for developers to tweak WP
 Installation
 ------------
 
-Create a /wp-migrate-db-pro-tweaks/ folder in /wp-content/plugins/ and simply drop the wp-migrate-db-pro-tweaks.php file into it. Then go to the Plugins page in your WordPress dashboard and activate it.
+Create a /wp-migrate-db-pro-tweaks/ folder in /wp-content/plugins/ in your Source WordPress install and simply drop the wp-migrate-db-pro-tweaks.php file into it. Then go to the Plugins page in your WordPress dashboard and activate it.
 
 Setup
 -----
