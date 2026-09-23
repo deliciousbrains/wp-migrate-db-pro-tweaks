@@ -4,6 +4,7 @@ kind: Resource
 metadata:
   name: wp-migrate-db-pro-tweaks
 spec:
+  owner: delicious
   type: repository
   engineeringExcellence:
     # Engineering Excellence checks this repo is exempt from
