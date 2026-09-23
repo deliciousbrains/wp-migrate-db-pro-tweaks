@@ -1,0 +1,16 @@
+# Save as repo-info.yaml at your repository root — NOT catalog-info.yaml.
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: wp-migrate-db-pro-tweaks
+spec:
+  type: repository
+  engineeringExcellence:
+    # Engineering Excellence checks this repo is exempt from
+    exemptedChecks:
+      repositoryVisibilityPrivate:
+        reason: |-
+          Public repository approved by Security — see linked ticket
+          for review and decision.
+        tickets:
+        - https://wpengine.atlassian.net/browse/ASKSEC-8984
